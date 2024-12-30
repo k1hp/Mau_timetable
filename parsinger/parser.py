@@ -164,12 +164,20 @@ if __name__ == "__main__":
     # with open("file.html", "w") as f:
     #     f.write(timetable.get_timetable())
     # timetable = TeacherParser(config)
-    with open("file.html", "w") as f:
+    soup = BeautifulSoup(timetable.get_timetable(), "lxml")
+    table = soup.find("div", class_="row table-row")
+    table = table.prettify()
+    head = soup.select_one("div[class='col-md-12 content bvi-speech'] h1")
+    head = head.prettify()
+    with open("file.html", "w", encoding="utf-8") as f:
         try:
-            f.write(timetable.get_timetable())
+            f.write(head)
+            f.write(table)
             print("All is well!")
         except Exception as e:
             print(f"Произошла ошибка: {e}")
+
+
 
 
 "https://mauniver.ru/student/timetable/new/?mode=1&pers=315&facs=8&courses=1"
