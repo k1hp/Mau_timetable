@@ -1,8 +1,0 @@
-.custom_card {
-    background-color: #333333;
-    color: green;
-}
-
-.custom_card:hover {
-    transform: scale(1.05);
-}
