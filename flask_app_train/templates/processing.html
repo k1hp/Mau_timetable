@@ -1,0 +1,25 @@
+{% extends "navigation.html" %}
+
+{% block title %}
+Processing_page
+{% endblock title %}
+
+{% block addition %}
+    <div class="d-flex justify-content-center pt-3">
+        <form action="/processing/req" method="post">
+            <table>
+                <tr>
+                    <td>
+                        <input type="text" name="{{ param_name }}" placeholder="Введите данные" class="bg-light border-0">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-center">
+                        <input type="submit" value="Submit data" class="btn bg-info">
+                    </td>
+                </tr>
+
+            </table>
+        </form>
+    </div>
+{% endblock addition %}

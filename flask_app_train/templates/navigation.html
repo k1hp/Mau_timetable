@@ -13,7 +13,7 @@ Navigation_page
     <div class="d-flex justify-content-center p-3">
         <h1>This is Navigation page</h1>
     </div>
-    <div class="row">
+    <div class="row d-flex justify-content-center">
         {% for name, path in buttons.items() %}
         <div class="col-4 d-flex justify-content-center">
             <a href="{{ path }}" target="_blank">
@@ -25,5 +25,7 @@ Navigation_page
         </div>
         {% endfor %}
 
+    {% block addition %} {% endblock addition %}
+    </div>
 </div>
 {% endblock main %}
