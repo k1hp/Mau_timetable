@@ -3,28 +3,9 @@ from bs4 import BeautifulSoup
 import json
 
 from parsinger.preparations import Preparations
+from parsinger.managers import Manager
 
 BASE_URL = "https://mauniver.ru/student/timetable/new/"
-
-
-class Manager:
-    def __init__(self):
-        self.file_name = "profiles.json"
-
-    def save_to(self, data: dict, file_name=None):
-        if file_name is None:
-            file_name = self.file_name
-
-        with open(file_name, "w") as file:
-            json.dump(data, file, indent=4)
-
-    def get_from(self, file_name=None):
-        if file_name is None:
-            file_name = self.file_name
-
-        with open(file_name, "r") as file:
-            data = json.load(file)
-            return data
 
 
 class Parser:
@@ -61,6 +42,11 @@ class MauParser(Parser):
         super().__init__(config)
         self.start_page = super().get_selection_page(BASE_URL)
 
+    def get_parameter_values(self, parameter):
+        selects = self.start_page.find("select", attrs={"name": parameter})
+        values = selects.find_all("option")
+        return [value.text for value in values[1:]]
+
     def create_parameter(self, parameter) -> str:
         selects = self.start_page.find("select", attrs={"name": parameter})
         values = selects.find_all("option")
@@ -69,6 +55,8 @@ class MauParser(Parser):
         for value in values[1:]:
             if inp.lower() == value.text.lower():
                 return value.attrs["value"]
+
+    def define_data(self): ...
 
 
 class GroupsParser(MauParser):
@@ -87,11 +75,10 @@ class GroupsParser(MauParser):
         )
         return params
 
-    def select_group(self):
+    def select_group(self, old_group=False):
         manager = Manager()
         group_name = None
-        inp = input("Хотите просмотреть информацию по прошлой группе: ")
-        if "yes" in inp.lower() or "да" in inp.lower():
+        if old_group:
             input_data = manager.get_from()
             self.parameters = input_data["params"]
             params = self.get_params(names=["pers"])
@@ -176,8 +163,6 @@ if __name__ == "__main__":
             print("All is well!")
         except Exception as e:
             print(f"Произошла ошибка: {e}")
-
-
 
 
 "https://mauniver.ru/student/timetable/new/?mode=1&pers=315&facs=8&courses=1"

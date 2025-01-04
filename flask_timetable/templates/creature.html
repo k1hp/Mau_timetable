@@ -2,16 +2,16 @@
 
 {% block main %}
 <div class="container">
-    <form action="/new/choose" method="POST">
+    <form action="/new/create" method="POST">
         <select name="faculty">
             {% for faculty in faculties %}
             <option value="{{ faculty }}"> {{ faculty }} </option>
-            {% endfor faculties %}
+            {% endfor %}
         </select>
         <select name="course">
             {% for course in courses %}
-            <option value="{{ course }}"> {{ course }} </option>
-            {% endfor courses %}
+            <option value="{{ course }}"> {{ course}} </option>
+            {% endfor%}
         </select>
         <input type="submit" value="Показать группы">
     </form>
