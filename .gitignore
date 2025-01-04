@@ -1,3 +1,5 @@
 **/.idea
 **/.venv
 **/__pycache__/
+**/flask_app_train
+**/jinja_learn

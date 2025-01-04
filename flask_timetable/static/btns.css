@@ -1,0 +1,15 @@
+.menu_button {
+    border: none;
+    border-radius: 6px;
+    background-color: red;
+    text-decoration: none;
+    color: white;
+    padding: 5px 5px;
+    margin: 7px 7px;
+}
+
+.button_alignment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

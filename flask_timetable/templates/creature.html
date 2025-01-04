@@ -1,0 +1,19 @@
+{% extends "navigation.html" %}
+
+{% block main %}
+<div class="container">
+    <form action="/new/choose" method="POST">
+        <select name="faculty">
+            {% for faculty in faculties %}
+            <option value="{{ faculty }}"> {{ faculty }} </option>
+            {% endfor faculties %}
+        </select>
+        <select name="course">
+            {% for course in courses %}
+            <option value="{{ course }}"> {{ course }} </option>
+            {% endfor courses %}
+        </select>
+        <input type="submit" value="Показать группы">
+    </form>
+</div>
+{% endblock main %}

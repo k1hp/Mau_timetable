@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block any_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='btns.css') }}">
+{% endblock any_styles %}
+
+{% block header %}
+<div class="container pt-2">
+  <div class="row">
+    <div class="col-6 d-flex justify-content-start">
+      <img width="40" height="40" src="https://img.icons8.com/pastel-glyph/64/laptop-metrics.png" alt="laptop-metrics"/>
+    </div>
+    <div class="col-6 d-flex justify-content-end">
+      <a href="/login" class="btn d-flex align-items-center bg-primary">
+        <img width="33" height="33" src="https://img.icons8.com/color-pixels/32/home.png" alt="home"/> Аккаунт
+      </a>
+    </div>
+
+  </div>
+</div>
+<div class="container bg-black my-2 rounded">
+  <div class="row d-flex justify-content-between">
+    <div class="col-4 button_alignment">
+      <a href="" class="menu_button">
+        Новая группа
+      </a>
+
+    </div>
+    <div class="col-4 button_alignment">
+      <a href="" class="menu_button">
+        Ваша группа
+      </a>
+
+    </div>
+    <div class="col-4 button_alignment">
+      <a href="" class="menu_button">
+        Преподаватели
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock header %}
