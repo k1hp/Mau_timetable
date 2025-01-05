@@ -3,9 +3,28 @@ from bs4 import BeautifulSoup
 import json
 
 from parsinger.preparations import Preparations
-from parsinger.managers import Manager
 
 BASE_URL = "https://mauniver.ru/student/timetable/new/"
+
+
+class Manager:
+    def __init__(self):
+        self.file_name = "profiles.json"
+
+    def save_to(self, data: dict, file_name=None):
+        if file_name is None:
+            file_name = self.file_name
+
+        with open(file_name, "w") as file:
+            json.dump(data, file, indent=4)
+
+    def get_from(self, file_name=None):
+        if file_name is None:
+            file_name = self.file_name
+
+        with open(file_name, "r") as file:
+            data = json.load(file)
+            return data
 
 
 class Parser:
@@ -42,11 +61,6 @@ class MauParser(Parser):
         super().__init__(config)
         self.start_page = super().get_selection_page(BASE_URL)
 
-    def get_parameter_values(self, parameter):
-        selects = self.start_page.find("select", attrs={"name": parameter})
-        values = selects.find_all("option")
-        return {value.text: value.attrs["value"] for value in values[1:]}
-
     def create_parameter(self, parameter) -> str:
         selects = self.start_page.find("select", attrs={"name": parameter})
         values = selects.find_all("option")
@@ -56,42 +70,36 @@ class MauParser(Parser):
             if inp.lower() == value.text.lower():
                 return value.attrs["value"]
 
-    def define_data(self): ...
-
 
 class GroupsParser(MauParser):
     def __init__(self, config):
         super().__init__(config)
         self.parameter_names = ["pers", "facs", "courses"]
         self.parameters = {"mode": "1"}
-        self.manager = Manager()
 
-    def get_params(self, names): ...
+    def get_params(self, names=None) -> dict:
+        if names is None:
+            names = self.parameter_names
 
-    def get_groups(self):
         params = self.parameters
         params.update(
-            self.manager.get_from(
-                r"C:\Users\USER\PycharmProjects\Mau_timetable\flask_timetable\group_selection.json"
-            )
+            {parameter: self.create_parameter(parameter) for parameter in names}
         )
-        print(params)
-        soup = self.get_selection_page(BASE_URL, params)
-        groups = soup.select("div.table-responsive a.btn")
-        groups = {group.text: group.attrs["href"] for group in groups}
-        print(groups)
-        return groups
+        return params
 
-    def select_group(self, old_group=False):
+    def select_group(self):
+        manager = Manager()
         group_name = None
-        if old_group:
-            input_data = self.manager.get_from()
+        inp = input("Хотите просмотреть информацию по прошлой группе: ")
+        if "yes" in inp.lower() or "да" in inp.lower():
+            input_data = manager.get_from()
             self.parameters = input_data["params"]
             params = self.get_params(names=["pers"])
             group_name = input_data["group_name"]
         else:
             params = self.get_params()
 
+        print(params)
         soup = self.get_selection_page(BASE_URL, params)
         groups = soup.select("div.table-responsive a.btn")
         groups = {group.text: group.attrs["href"] for group in groups}
@@ -106,7 +114,7 @@ class GroupsParser(MauParser):
             "params": params,
             "group_name": group_name,
         }
-        self.manager.save_to(data)
+        manager.save_to(data)
         return BASE_URL + groups.get(group_name, "")
 
     def get_timetable(self):
@@ -169,9 +177,3 @@ if __name__ == "__main__":
             print("All is well!")
         except Exception as e:
             print(f"Произошла ошибка: {e}")
-
-
-"https://mauniver.ru/student/timetable/new/?mode=1&pers=315&facs=8&courses=1"
-# для обычного расписания mode=1 - первый параметр "mode=1&pers=315&facs=7&courses=1"
-
-"https://mauniver.ru/student/timetable/new/?mode=1&pers=323&facs=1&courses=1"

@@ -1,0 +1,13 @@
+{% extends "navigation.html" %}
+
+{% block main %}
+ <div class="container">
+{% if group_name is none %}
+    <h1 class="text-light">Вы еще не выбрали группу</h1>
+
+{% else %}
+    <h1 class="text-light"> Ваша группа: {{ group_name }} </h1>
+
+{% endif %}
+ </div>
+{% endblock main %}

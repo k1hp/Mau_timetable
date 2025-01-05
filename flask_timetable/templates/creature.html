@@ -3,15 +3,15 @@
 {% block main %}
 <div class="container">
     <form action="/new/create" method="POST">
-        <select name="faculty">
-            {% for faculty in faculties %}
-            <option value="{{ faculty }}"> {{ faculty }} </option>
+        <select name="{{ fac }}">
+            {% for faculty, value in faculties.items() %}
+            <option value="{{ value }}"> {{ faculty }} </option>
             {% endfor %}
         </select>
-        <select name="course">
-            {% for course in courses %}
-            <option value="{{ course }}"> {{ course}} </option>
-            {% endfor%}
+        <select name="{{ cor }}">
+            {% for course, value in courses.items() %}
+            <option value="{{ value }}"> {{ course }} </option>
+            {% endfor %}
         </select>
         <input type="submit" value="Показать группы">
     </form>
