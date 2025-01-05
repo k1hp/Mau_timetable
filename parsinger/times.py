@@ -1,10 +1,14 @@
 from datetime import datetime, timedelta
 
+from flask_timetable.settings import GROUP_CONFIG_PARAMS
+
 
 class Clocks:
     def __init__(self):
         self.today = datetime.today().date()
         self.format = "%d.%m.%Y"
+        self.new_format = "%Y-%m-%d"
+        self.period_values = {"today": None, "tomorow": self.today + timedelta(days=1)}
 
     def remake_period(self, inp: str) -> list[datetime]:
         period = inp.split()[0].split("-")
@@ -19,11 +23,30 @@ class Clocks:
 
         return lst
 
-    def define_today_period(self, periods: list[str]) -> str:
-        print(self.today)
+    def define_need_period(
+        self, periods: list[str], our_date: datetime | None = None
+    ) -> str:
+        if our_date is None:
+            our_date = self.today
         for period in periods:
-            if self.today in self.remake_period(period):
+            if our_date in self.remake_period(period):
                 return period
+
+    def get_period_params(self, periods: list[str], our_date: str = "today") -> dict:
+        our_date = self.period_values[our_date]
+        inp = self.define_need_period(periods, our_date)
+        start, end, kind = GROUP_CONFIG_PARAMS[1:]
+        data = {}
+        # вид даты 2025-01-06
+        period, week = inp.split()
+        period_start, period_end = period.split("-")
+        period_start = datetime.strptime(period_start, self.format)
+        period_end = datetime.strptime(period_end, self.format)
+        data[start] = period_start.strftime(self.new_format)
+        data[end] = period_end.strftime(self.new_format)
+        data[kind] = week.split("/")[0].strip("(")
+        print(data)
+        return data
 
 
 if __name__ == "__main__":
@@ -57,4 +80,4 @@ if __name__ == "__main__":
 
     clocks = Clocks()
     print(clocks.remake_period(period))
-    print(clocks.define_today_period(periods))
+    print(clocks.define_need_period(periods))

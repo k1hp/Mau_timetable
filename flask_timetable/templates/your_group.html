@@ -7,7 +7,12 @@
 
 {% else %}
     <h1 class="text-light"> Ваша группа: {{ group_name }} </h1>
+    <div class="col-4 button_alignment">
+      <a href="/timetable/today" class="menu_button">
+        Сегодня
+      </a>
 
+    </div>
 {% endif %}
  </div>
 {% endblock main %}

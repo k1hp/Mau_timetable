@@ -4,20 +4,28 @@ import json
 
 from parsinger.preparations import Preparations
 from parsinger.managers import Manager
-
-BASE_URL = "https://mauniver.ru/student/timetable/new/"
+from parsinger.times import Clocks
+from flask_timetable.settings import (
+    FILE,
+    BASE_URL,
+    GROUP_SETTINGS,
+    GROUP_PARAMS,
+    GROUP_CONFIG_PARAMS,
+    BASE_TIMETABLE_URL,
+)
 
 
 class Parser:
     def __init__(self, config):
         self.config = config
         self.session = requests.Session()
+        self.clocks = Clocks()
 
     def do_request(self, url, params=None):
         return self.session.get(
             url,
             headers=self.config.get_headers(),
-            proxies=self.config.get_proxy(),
+            proxies=self.config.get_proxy(),  # скорость зависит от прокси
             params=params,
         )
 
@@ -42,11 +50,6 @@ class MauParser(Parser):
         super().__init__(config)
         self.start_page = super().get_selection_page(BASE_URL)
 
-    def get_parameter_values(self, parameter):
-        selects = self.start_page.find("select", attrs={"name": parameter})
-        values = selects.find_all("option")
-        return {value.text: value.attrs["value"] for value in values[1:]}
-
     def create_parameter(self, parameter) -> str:
         selects = self.start_page.find("select", attrs={"name": parameter})
         values = selects.find_all("option")
@@ -62,11 +65,25 @@ class MauParser(Parser):
 class GroupsParser(MauParser):
     def __init__(self, config):
         super().__init__(config)
-        self.parameter_names = ["pers", "facs", "courses"]
+        self.parameter_names = GROUP_PARAMS
+        self.config_names = GROUP_CONFIG_PARAMS
         self.parameters = {"mode": "1"}
         self.manager = Manager()
 
-    def get_params(self, names): ...
+    def get_params(self, names: list | None = None, filename=FILE) -> dict:
+        data = self.manager.get_from(filename)
+        data.update(self.parameters)
+        if names is None:
+            return data
+        result = {}
+        for name in names:
+            result[name] = data.get(name)
+        return result
+
+    def get_parameter_values(self, parameter: str) -> dict:
+        selects = self.start_page.find("select", attrs={"name": parameter})
+        values = selects.find_all("option")
+        return {value.text: value.attrs["value"] for value in values[1:]}
 
     def get_groups(self):
         params = self.parameters
@@ -82,35 +99,49 @@ class GroupsParser(MauParser):
         print(groups)
         return groups
 
-    def select_group(self, old_group=False):
-        group_name = None
-        if old_group:
-            input_data = self.manager.get_from()
-            self.parameters = input_data["params"]
-            params = self.get_params(names=["pers"])
-            group_name = input_data["group_name"]
-        else:
-            params = self.get_params()
+    def default_select_group(self):
+        # group_name = None
+        # if old_group:
+        #     input_data = self.manager.get_from()
+        #     self.parameters = input_data["params"]
+        #     params = self.get_params(names=["pers"])
+        #     group_name = input_data["group_name"]
+        # else:
+        params = self.get_params()
 
         soup = self.get_selection_page(BASE_URL, params)
         groups = soup.select("div.table-responsive a.btn")
         groups = {group.text: group.attrs["href"] for group in groups}
-        if group_name is None:
-            print(*groups, sep="\n")
-            group_name = input("Выберите группу: ")
+        group_name = params["group"]
 
         if group_name not in groups:
-            raise ValueError
+            raise ValueError("Ошибка в названии группы")
 
-        data = {
-            "params": params,
-            "group_name": group_name,
-        }
-        self.manager.save_to(data)
-        return BASE_URL + groups.get(group_name, "")
+        group_url = groups.get(group_name, "")
+        if group_url != "":
+            self.create_config(group_url)  # обновляем информацию по группе в конфиге
 
-    def get_timetable(self):
-        return super().get_html(self.select_group())
+        return BASE_URL + group_url
+
+    def fast_select_group(self, date: str):
+        pers = self.get_parameter_values(GROUP_PARAMS[0]).keys()
+        data = self.clocks.get_period_params(pers, date)
+        data.update(self.manager.get_from(GROUP_SETTINGS))
+        self.manager.save_to(data, GROUP_SETTINGS)
+        return (BASE_TIMETABLE_URL, data)
+
+    def create_config(self, group_url: str):
+        params = group_url.split("?")[1].split("&")
+        print(params)
+        for element in params:
+            if "key" in element:
+                value = element.split("=")[1]
+                self.manager.save_to({"key": value}, GROUP_SETTINGS)
+
+    def get_timetable(self, date: str):
+        # через try except посмотреть если запрос ничего не дает из готовых параметров
+        # return self.get_html(self.default_select_group())
+        return self.get_html(*self.fast_select_group(date))
 
 
 class TeacherParser(MauParser):
@@ -157,7 +188,7 @@ if __name__ == "__main__":
     # with open("file.html", "w") as f:
     #     f.write(timetable.get_timetable())
     # timetable = TeacherParser(config)
-    soup = BeautifulSoup(timetable.get_timetable(), "lxml")
+    # soup = BeautifulSoup(timetable.get_timetable(...), "lxml")
     table = soup.find("div", class_="row table-row")
     table = table.prettify()
     head = soup.select_one("div[class='col-md-12 content bvi-speech'] h1")

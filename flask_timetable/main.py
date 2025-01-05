@@ -1,9 +1,11 @@
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, render_template_string
+
 
 from parsinger.parser import GroupsParser
 from parsinger.preparations import Preparations
 from parsinger.managers import Manager
 from parsinger.times import Clocks
+from flask_timetable.settings import FILE
 
 app = Flask(__name__)
 
@@ -50,10 +52,12 @@ def teachers(): ...
 @app.route("/old", methods=["GET", "POST"])
 def get_old_group():
     if request.method == "POST":
-        group_name = request.form["group"]
+        group_name, group_url = request.form["group"].split(", ")
+        print(group_name, group_url)
         data = manager.get_from(FILE)
         data.update({"group": group_name})
         manager.save_to(data, FILE)
+        parser.create_config(group_url)
         return render_template("your_group.html", group_name=group_name)
 
     if request.method == "GET":
@@ -65,10 +69,16 @@ def get_old_group():
         return render_template("your_group.html", group_name=group_name)
 
 
+@app.route("/timetable/today")
+def get_today():
+    timetable = parser.get_timetable("today")
+    return render_template_string(timetable)
+
+
 if __name__ == "__main__":
     manager = Manager()
     config = Preparations()
     parser = GroupsParser(config)
     clocks = Clocks()
-    FILE = "group_selection.json"
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(debug=True)

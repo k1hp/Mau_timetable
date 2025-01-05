@@ -6,8 +6,8 @@
     <div class="container">
         <form action="/old" method="POST">
         <select name="{{ group }}">
-            {% for group in groups.keys() %}
-            <option value="{{ group }}"> {{ group }} </option>
+            {% for group, value in groups.items() %}
+            <option value="{{ group }}, {{ value }}"> {{ group }} </option>
             {% endfor %}
         </select>
         <input type="submit" value="Выбрать группу">
