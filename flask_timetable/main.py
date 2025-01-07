@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def navigation():
-    return render_template("navigation.html")
+    return render_template("navigation.html", title="Navigation_page")
 
 
 @app.route("/new/check")
@@ -28,7 +28,12 @@ def create_new_group():
         courses = parser.get_parameter_values(cors)
         print(facs, {cors: courses})
         return render_template(
-            "creature.html", faculties=facs, courses=courses, fac=fac, cor=cors
+            "creature.html",
+            faculties=facs,
+            courses=courses,
+            fac=fac,
+            cor=cors,
+            title="Create_group",
         )
 
     if request.method == "POST":
@@ -39,7 +44,9 @@ def create_new_group():
 
         manager.save_to(params, FILE)
         groups = parser.get_groups()
-        return render_template("create_groups.html", groups=groups, group="group")
+        return render_template(
+            "create_groups.html", groups=groups, group="group", title="Create_group"
+        )
 
 
 @app.route("/new/choose", methods=["GET", "POST"])
@@ -59,7 +66,9 @@ def get_old_group():
         data.update({"group": group_name})
         manager.save_to(data, FILE)
         parser.create_config(group_url)
-        return render_template("your_group.html", group_name=group_name)
+        return render_template(
+            "your_group.html", group_name=group_name, title="Your_group"
+        )
 
     if request.method == "GET":
         try:
@@ -67,7 +76,9 @@ def get_old_group():
             group_name = data.get("group")
         except FileNotFoundError:
             group_name = None
-        return render_template("your_group.html", group_name=group_name)
+        return render_template(
+            "your_group.html", group_name=group_name, title="Your_group"
+        )
 
 
 @app.route("/timetable/today")
@@ -76,7 +87,7 @@ def get_today():
     html_creator = CreatorTimetables(timetable)
     date, body = html_creator.create_today()
     html = html_creator.convert_into_text(bs_object=body)
-    return render_template("timetable_template.html", html_text=html)
+    return render_template("timetable_template.html", html_text=html, title="Timetable")
 
 
 @app.route("/timetable/tomorrow")
@@ -85,7 +96,7 @@ def get_tomorrow():
     html_creator = CreatorTimetables(timetable)
     date, body = html_creator.create_tomorrow()
     html = html_creator.convert_into_text(bs_object=body)
-    return render_template("timetable_template.html", html_text=html)
+    return render_template("timetable_template.html", html_text=html, title="Timetable")
 
 
 @app.route("/timetable/this_week")
@@ -93,7 +104,7 @@ def get_this_week():
     timetable = parser.get_timetable("this_week")
     html_creator = CreatorTimetables(timetable)
     html = html_creator.create_week()
-    return render_template("timetable_template.html", html_text=html)
+    return render_template("timetable_template.html", html_text=html, title="Timetable")
 
 
 @app.route("/timetable/next_week")
@@ -101,7 +112,7 @@ def get_next_week():
     timetable = parser.get_timetable("next_week")
     html_creator = CreatorTimetables(timetable)
     html = html_creator.create_week()
-    return render_template("timetable_template.html", html_text=html)
+    return render_template("timetable_template.html", html_text=html, title="Timetable")
 
 
 if __name__ == "__main__":

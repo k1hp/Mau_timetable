@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import json
+import functools
 
 from parsinger.preparations import Preparations
 from parsinger.managers import Manager
@@ -18,14 +19,39 @@ from flask_timetable.settings import (
 class Parser:
     def __init__(self, config):
         self.config = config
-        self.session = requests.Session()
+        self.session = self.create_session()
         self.clocks = Clocks()
 
+    @staticmethod
+    def session_error_handling(function):
+        @functools.wraps(function)
+        def wrapper(self_obj, *args, **kwargs):
+            try:
+                print("Декторатор применился")
+                return function(self_obj, *args, **kwargs)
+
+            except requests.exceptions.RequestException as e:
+                print(f"Ошибка при выполнении запроса: {e}")
+                self_obj.kill_old_session()
+                self_obj.session = self_obj.create_session()
+                return function(self_obj, *args, **kwargs)
+
+        return wrapper
+
+    def create_session(self):
+        session = requests.Session()
+        session.headers.update(self.config.get_headers())
+        session.proxies.update(self.config.get_proxy())  # скорость зависит от прокси
+        return session
+
+    def kill_old_session(self):
+        self.session.close()
+        self.session = self.create_session()
+
+    @session_error_handling
     def do_request(self, url, params=None):
         return self.session.get(
             url,
-            headers=self.config.get_headers(),
-            proxies=self.config.get_proxy(),  # скорость зависит от прокси
             params=params,
         )
 
@@ -37,6 +63,7 @@ class Parser:
         soup = BeautifulSoup(html, "lxml")
         return soup
 
+    @session_error_handling
     def get_selection_page(self, url, params=None):
         html = self.get_html(url, params)
         soup = self.create_soup(html)
