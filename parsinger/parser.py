@@ -126,9 +126,10 @@ class GroupsParser(MauParser):
     def fast_select_group(self, date: str):
         pers = self.get_parameter_values(GROUP_PARAMS[0]).keys()
         data = self.clocks.get_period_params(pers, date)
-        data.update(self.manager.get_from(GROUP_SETTINGS))
-        self.manager.save_to(data, GROUP_SETTINGS)
-        return (BASE_TIMETABLE_URL, data)
+        settings = self.manager.get_from(GROUP_SETTINGS)
+        settings.update(data)
+        self.manager.save_to(settings, GROUP_SETTINGS)
+        return (BASE_TIMETABLE_URL, settings)
 
     def create_config(self, group_url: str):
         params = group_url.split("?")[1].split("&")

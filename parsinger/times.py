@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 from flask_timetable.settings import GROUP_CONFIG_PARAMS
 
@@ -8,7 +8,15 @@ class Clocks:
         self.today = datetime.today().date()
         self.format = "%d.%m.%Y"
         self.new_format = "%Y-%m-%d"
-        self.period_values = {"today": None, "tomorow": self.today + timedelta(days=1)}
+        self.period_values = {
+            "today": self.today,
+            "tomorrow": self.today + timedelta(days=1),
+            "this_week": self.today,
+            "next_week": self.today + timedelta(days=8),
+        }
+
+    def get_day_month(self, inp: datetime | date) -> tuple:
+        return int(inp.strftime("%d")), int(inp.strftime("%m"))
 
     def remake_period(self, inp: str) -> list[datetime]:
         period = inp.split()[0].split("-")
@@ -23,16 +31,12 @@ class Clocks:
 
         return lst
 
-    def define_need_period(
-        self, periods: list[str], our_date: datetime | None = None
-    ) -> str:
-        if our_date is None:
-            our_date = self.today
+    def define_need_period(self, periods: list[str], our_date: datetime | date) -> str:
         for period in periods:
             if our_date in self.remake_period(period):
                 return period
 
-    def get_period_params(self, periods: list[str], our_date: str = "today") -> dict:
+    def get_period_params(self, periods: list[str], our_date: str) -> dict:
         our_date = self.period_values[our_date]
         inp = self.define_need_period(periods, our_date)
         start, end, kind = GROUP_CONFIG_PARAMS[1:]
