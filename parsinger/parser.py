@@ -116,7 +116,8 @@ class GroupsParser(MauParser):
         params = self.parameters
         params.update(
             self.manager.get_from(
-                r"C:\Users\USER\PycharmProjects\Mau_timetable\flask_timetable\group_selection.json"
+                # r"C:\Users\USER\PycharmProjects\Mau_timetable\flask_timetable\group_selection.json"
+                r"group_selection.json"
             )
         )
         print(params)
@@ -202,6 +203,8 @@ class TeacherParser(MauParser):
             raise ValueError
 
         return BASE_URL + teachers.get(teacher_name, "")
+
+    def fast_select_teacher(self): ...
 
     def get_timetable(self):
         return super().get_html(self.select_teacher())

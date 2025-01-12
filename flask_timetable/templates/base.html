@@ -15,5 +15,17 @@
 {% block main %} {% endblock main %}
 
 {% block footer %} {% endblock footer %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const currentLocation = window.location.pathname; // Получаем текущий путь
+      const menuItems = document.querySelectorAll('.menu_button'); // Находим все кнопки
+  
+      menuItems.forEach(item => {
+        if (item.getAttribute('href') === currentLocation) {
+          item.classList.add('active'); // Добавляем класс active к текущему элементу
+        }
+      });
+    });
+  </script>
 </body>
 </html>

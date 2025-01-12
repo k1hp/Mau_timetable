@@ -53,10 +53,6 @@ def create_new_group():
 def choose_group(): ...
 
 
-@app.route("/teachers")
-def teachers(): ...
-
-
 @app.route("/old", methods=["GET", "POST"])
 def get_old_group():
     if request.method == "POST":
@@ -66,9 +62,6 @@ def get_old_group():
         data.update({"group": group_name})
         manager.save_to(data, FILE)
         parser.create_config(group_url)
-        return render_template(
-            "your_group.html", group_name=group_name, title="Your_group"
-        )
 
     if request.method == "GET":
         try:
@@ -76,9 +69,8 @@ def get_old_group():
             group_name = data.get("group")
         except FileNotFoundError:
             group_name = None
-        return render_template(
-            "your_group.html", group_name=group_name, title="Your_group"
-        )
+
+    return render_template("your_group.html", group_name=group_name, title="Your_group")
 
 
 @app.route("/timetable/today")
@@ -113,6 +105,17 @@ def get_next_week():
     html_creator = CreatorTimetables(timetable)
     html = html_creator.create_week()
     return render_template("timetable_template.html", html_text=html, title="Timetable")
+
+
+@app.route("/teachers", methods=["GET", "POST"])
+def get_teachers():
+    if request.method == "GET":
+        return render_template("teachers.html", teacher=None, title="Teachers")
+
+    if request.method == "POST":
+        start_text = request.form["text"]
+        print(start_text)
+        return render_template("teachers.html", title="Teachers", text=start_text)
 
 
 if __name__ == "__main__":

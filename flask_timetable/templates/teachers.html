@@ -1,0 +1,25 @@
+{% extends "navigation.html" %}
+
+{% block main %}
+<div class="container">
+    {% if teacher is none %}
+    <div class="row">
+        <div class="col-6 alignment">
+            <h1 class="text-light">Преподаватель еще не выбран</h1>
+
+        </div>
+
+        <div class="col-6 alignment justify-content-start">
+            <a href="/teachers/create" class="menu_button">
+            Выбрать преподавателя
+            </a>
+
+        </div>
+    </div>
+
+    {% else %}
+    <h1 class="text-light">Преподаватель: {{ teacher }}</h1>
+
+    {% endif %}
+</div>
+{% endblock main %}

@@ -1,12 +1,38 @@
 .menu_button {
-    border: none;
+    border: 2px solid transparent;
     border-radius: 6px;
-    background-color: red;
+    background-color: transparent;
     text-decoration: none;
     color: white;
     padding: 5px 5px;
     margin: 7px 7px;
+    transition: background-color 0.3s;
 }
+
+.menu_button:hover {
+    background-color: rgb(31, 28, 28);
+}
+
+.menu_button.active {
+    background-color: rgb(40, 110, 157);
+}
+
+.account_button {
+    border: 2px solid transparent;
+    border-radius: 6px;
+    background-color: transparent;
+    text-decoration: none;
+    color: black;
+    padding: 5px 5px;
+    margin: 7px 7px;
+    transition: background-color 0.5s;
+}
+
+.account_button:hover {
+    background-color: rgb(40, 110, 157);
+    /* border: 2px solid black; */
+}
+
 
 .button_alignment {
     display: flex;
