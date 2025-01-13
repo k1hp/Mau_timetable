@@ -1,0 +1,21 @@
+{% extends "create_teacher.html" %}
+
+{% block main %}
+{{ super() }}
+<div class="container">
+{% if teachers is none %}
+    <h1 class="text-light">Преподаватели с такими инициалами не были найдены</h1>
+
+    {% else %}
+    <form action="/teachers" method="POST">
+        <select name="{{ teacher }}">
+            {% for tch, value in teachers.items() %}
+            <option value="{{ tch }}, {{ value }}"> {{ tch }} </option>
+            {% endfor %}
+        </select>
+        <input type="submit" value="Выбрать преподавателя">
+    </form>
+{% endif %}
+</div>
+
+{% endblock main %}

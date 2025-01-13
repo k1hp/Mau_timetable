@@ -20,6 +20,35 @@
     {% else %}
     <h1 class="text-light">Преподаватель: {{ teacher }}</h1>
 
+     <div class="row pt-3">
+        <div class="col-3 button_alignment">
+          <a href="/teachers/timetable/this_week" class="menu_button">
+            Текущая неделя
+          </a>
+
+        </div>
+
+        <div class="col-3 button_alignment">
+          <a href="/teachers/timetable/today" class="menu_button">
+            Сегодня
+          </a>
+
+        </div>
+         <div class="col-3 button_alignment">
+          <a href="/teachers/timetable/tomorrow" class="menu_button">
+            Завтра
+          </a>
+
+        </div>
+
+         <div class="col-3 button_alignment">
+          <a href="/teachers/timetable/next_week" class="menu_button">
+            Следующая неделя
+          </a>
+
+        </div>
+     </div>
+
     {% endif %}
 </div>
 {% endblock main %}
