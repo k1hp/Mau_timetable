@@ -5,6 +5,9 @@
     overflow: hidden;
     max-height: 90px;
 } */
+.backgr {
+    background-color: #1A1F2B;
+}
 
 .icon-logo {
     width: 40px; /* Ширина контейнера */
