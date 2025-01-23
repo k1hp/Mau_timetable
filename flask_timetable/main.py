@@ -1,4 +1,13 @@
-from flask import Flask, render_template, url_for, request, render_template_string
+from flask import (
+    Flask,
+    render_template,
+    url_for,
+    request,
+    render_template_string,
+    flash,
+    session,
+    redirect,
+)
 
 
 from parsinger.parser import GroupsParser, TeacherParser
@@ -11,9 +20,44 @@ from handlers.handle import CreatorTimetables
 app = Flask(__name__)
 
 
+@app.errorhandler(404)
+def not_found(error):
+    return render_template("not_found.html", title="Not Found"), 404
+
+
 @app.route("/")
 def navigation():
     return render_template("navigation.html", title="Navigation_page")
+
+
+@app.route("/profile")
+def profile():
+    if "user" in session:
+        return render_template(
+            "profile.html", title="Profile_page", user=session["user"]
+        )
+    # else:
+    #     return отдельно для того чтобы зарегатьься
+
+
+@app.route("/authorisation", methods=["GET", "POST"])
+def authorisation():
+    if "user" in session:
+        return redirect(url_for("profile"))
+    if request.method == "POST":
+        if request.form["passwd"] == "1234":
+            session["user"] = request.form["user"]
+            return redirect(url_for("profile"))
+        else:
+            flash(message="Введен неверный пароль, попробуй еще раз", category="error")
+
+    return render_template("authorisation.html", title="Authorisation_page")
+
+
+@app.route("/authorisation/sign_up")  # ну и тут нужно прикрутить redirect
+def sign_up():
+    if request.method == "POST":
+        ...
 
 
 @app.route("/new/check")
@@ -195,5 +239,8 @@ if __name__ == "__main__":
     group_parser = GroupsParser(config)
     teacher_parser = TeacherParser(config)
     clocks = Clocks()
+    app.config["SECRET_KEY"] = (
+        "e0c69eae8afb38872fa425c2cdba794176f3b9d97e8eefb7b0e7c831f566458f"
+    )
     app.run(host="0.0.0.0", port=5000, debug=True)
     # app.run(debug=True)

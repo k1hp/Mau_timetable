@@ -29,6 +29,7 @@
 }
 
 .other_button {
+    border: none;
     border-radius: 6px;
     background-color: transparent;
     text-decoration: none;

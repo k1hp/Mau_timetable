@@ -4,7 +4,6 @@
 
 {% block any_styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='btns.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='beauty.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='helpers.css') }}">
 {% endblock any_styles %}
 
@@ -16,7 +15,7 @@
       </a>
     </div>
     <div class="col-6 alignment justify-content-end">
-      <a href="/login" class="account_button d-flex align-items-center">
+      <a href="/authorisation" class="account_button d-flex align-items-center">
         <div class="icon-home"></div> <b>Аккаунт</b>
       </a>
     </div>

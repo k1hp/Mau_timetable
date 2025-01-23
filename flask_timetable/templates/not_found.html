@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='not_found.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/img.png') }}" type="image/png">
+    <title>404 - Страница не найдена</title>
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='images/img_1.png') }}" width="156" height="156" alt="404 Image" class="error-image">
+        <h1>404</h1>
+        <p>Упс! Страница не найдена.</p>
+        <a href="/" class="home-link">Вернуться на главную</a>
+    </div>
+</body>
+</html>

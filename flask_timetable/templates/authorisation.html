@@ -1,0 +1,55 @@
+{% extends "navigation.html" %}
+
+{% block any_styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='flashes.css') }}">
+{% endblock any_styles %}
+
+{% block main %}
+<div class="container ">
+    {% for category, value in get_flashed_messages(with_categories=True) %}
+    <div class="custom_message {{ category }}"> {{ value }} </div>
+    {% endfor %}
+    <div class="alignment">
+        <form action="/authorisation" method="POST">
+                <div class="row">
+                    <div class="col-4">
+                        User
+                    </div>
+                    <div class="col-8">
+                        <input type="text" name="user" placeholder="Write username" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        Passwd
+                    </div>
+                    <div class="col-8">
+                        <input type="text" name="passwd" placeholder="Write password" required>
+                    </div>
+                </div>
+                <div class="button_alignment">
+                    <input type="Submit" value="SIGN IN" class="other_button">
+
+                </div>
+        </form>
+
+    </div>
+    <div class="alignment">
+        <div class="row">
+            <div class="col-8 alignment">
+                    If you don't have an account
+            </div>
+            <div class="col-4 button_alignment">
+                  <a href="/authorisation/sign_up" class="other_button">
+                    SIGN UP
+                  </a>
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+{% endblock main %}
