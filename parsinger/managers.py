@@ -1,21 +1,23 @@
 import json
+from flask import session
 
 
 class Manager:
-    def __init__(self):
-        self.file_name = "profiles.json"
 
-    def save_to(self, data: dict, file_name=None):
+    def save_to(self, data: dict, file_name=None) -> None:
         if file_name is None:
-            file_name = self.file_name
+            raise FileNotFoundError("В Manager нет файла по умолчанию")
 
-        with open(file_name, "w", encoding="UTF-8") as file:
-            json.dump(data, file, indent=4)
+        session[file_name] = data
+        # with open(file_name, "w", encoding="UTF-8") as file:
+        #     json.dump(data, file, indent=4)
 
-    def get_from(self, file_name=None):
+    def get_from(self, file_name=None) -> dict | None:
         if file_name is None:
-            file_name = self.file_name
+            raise FileNotFoundError("В Manager нет файла по умолчанию")
 
-        with open(file_name, "r", encoding="UTF-8") as file:
-            data = json.load(file)
-            return data
+        # with open(file_name, "r", encoding="UTF-8") as file:
+        #     data = json.load(file)
+        #     return data
+
+        return session.get(file_name, None)

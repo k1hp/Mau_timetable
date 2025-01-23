@@ -8,7 +8,8 @@ from flask import (
     session,
     redirect,
 )
-
+import uuid
+import datetime
 
 from parsinger.parser import GroupsParser, TeacherParser
 from parsinger.preparations import Preparations
@@ -17,12 +18,14 @@ from parsinger.times import Clocks
 from flask_timetable.settings import FILE, FILE_T
 from handlers.handle import CreatorTimetables
 
+
 app = Flask(__name__)
+app.config["SECRET_KEY"] = uuid.uuid4().hex
 
 
 @app.errorhandler(404)
 def not_found(error):
-    return render_template("not_found.html", title="Not Found"), 404
+    return (render_template("not_found.html", title="Not Found"), 404)
 
 
 @app.route("/")
@@ -58,6 +61,12 @@ def authorisation():
 def sign_up():
     if request.method == "POST":
         ...
+
+
+@app.route("/authorisation/logout")
+def logout():
+    session.pop("user", None)
+    return redirect(url_for("navigation"))
 
 
 @app.route("/new/check")
@@ -108,11 +117,11 @@ def get_old_group():
         group_parser.create_config(group_url)
 
     if request.method == "GET":
-        try:
-            data = manager.get_from(FILE)
-            group_name = data.get("group")
-        except FileNotFoundError:
+        data = manager.get_from(FILE)
+        if data is None:
             group_name = None
+        else:
+            group_name = data.get("group", None)
 
     return render_template("your_group.html", group_name=group_name, title="Your_group")
 
@@ -162,11 +171,11 @@ def get_teachers():
         teacher_parser.create_config(teacher_url)
 
     if request.method == "GET":
-        try:
-            data = manager.get_from(FILE_T)
-            teacher_name = data.get("teacher")
-        except FileNotFoundError:
+        data = manager.get_from(FILE_T)
+        if data is None:
             teacher_name = None
+        else:
+            teacher_name = data.get("teacher")
 
     return render_template("teachers.html", teacher=teacher_name, title="Teacher")
 
@@ -239,8 +248,5 @@ if __name__ == "__main__":
     group_parser = GroupsParser(config)
     teacher_parser = TeacherParser(config)
     clocks = Clocks()
-    app.config["SECRET_KEY"] = (
-        "e0c69eae8afb38872fa425c2cdba794176f3b9d97e8eefb7b0e7c831f566458f"
-    )
     app.run(host="0.0.0.0", port=5000, debug=True)
     # app.run(debug=True)
