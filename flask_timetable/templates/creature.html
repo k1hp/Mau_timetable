@@ -3,17 +3,33 @@
 {% block main %}
 <div class="container">
     <form action="/new/create" method="POST">
-        <select name="{{ fac }}">
-            {% for faculty, value in faculties.items() %}
-            <option value="{{ value }}"> {{ faculty }} </option>
-            {% endfor %}
-        </select>
-        <select name="{{ cor }}">
-            {% for course, value in courses.items() %}
-            <option value="{{ value }}"> {{ course }} </option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="Показать группы">
+        <div class="custom_container_3">
+
+            <div class="row">
+                <div class="col-12">
+                    <img src="{{ url_for('static', filename='images/search_2.gif') }}" width="156" height="156" alt="Image" class="error-image">
+                </div>
+                <div class="col-6">
+                    <select name="{{ fac }}" class="form-select">
+                        {% for faculty, value in faculties.items() %}
+                        <option value="{{ value }}"> {{ faculty }} </option>
+                        {% endfor %}
+                    </select>
+    
+                </div>
+                <div class="col-6">
+                    <select name="{{ cor }}" class="form-select">
+                        {% for course, value in courses.items() %}
+                        <option value="{{ value }}"> {{ course }} </option>
+                        {% endfor %}
+                    </select>
+                    
+                </div>
+                <div class="col-12 pt-3">
+                    <input type="submit" value="Показать группы">
+                </div>
+            </div>
+        </div>
     </form>
 </div>
 {% endblock main %}

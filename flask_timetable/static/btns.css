@@ -47,13 +47,12 @@
     color: black;
     padding: 5px 5px;
     margin: 7px 7px;
+    transition: background-color 0.4s;
     /* transition: background 3s linear; не работает */
 }
 
 .account_button:hover {
-    background: linear-gradient(to bottom, #4A90E2, rgb(255, 20, 192), rgb(183, 16, 99));
-
-    /* border: 2px solid black; */
+    background-color: #3e85d5;
 }
 
 

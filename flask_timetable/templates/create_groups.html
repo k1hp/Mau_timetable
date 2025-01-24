@@ -4,20 +4,26 @@
     {{ super() }}
     <div class="container">
         <form action="/old" method="POST">
-        <div class="row alginment">
-            <div class="col-3">
-                <select name="{{ group }}" class="form-select">
-                    {% for group, value in groups.items() %}
-                    <option value="{{ group }}, {{ value }}"> {{ group }} </option>
-                    {% endfor %}
-                </select>
-
+            <div class="custom_container_3">
+                
+                <div class="row alignment">
+                    <div class="col-12 pb-3">
+                        <img src="{{ url_for('static', filename='images/search.gif') }}" width="156" height="156" alt="Image" class="error-image">
+                    </div>
+                    <div class="col-4">
+                        <select name="{{ group }}" class="form-select">
+                            {% for group, value in groups.items() %}
+                            <option value="{{ group }}, {{ value }}"> {{ group }} </option>
+                            {% endfor %}
+                        </select>
+        
+                    </div>
+                    <div class="col-auto alignment">
+                        <input type="submit" value="Выбрать группу">
+        
+                    </div>
+                </div>
             </div>
-            <div class="col-auto alignment">
-                <input type="submit" value="Выбрать группу">
-
-            </div>
-        </div>
     </form>
     </div>
 {% endblock main %}

@@ -3,30 +3,31 @@
 {% block main %}
 <div class="container">
     {% if teacher is none %}
-    <div class="row">
-        <div class="col-6 alignment">
-            <h1 class="text-light">Преподаватель еще не выбран</h1>
-
-        </div>
-
-        <div class="col-6 alignment justify-content-start">
-            <a href="/teachers/create" class="menu_button">
-            Выбрать преподавателя
-            </a>
-
-        </div>
+    <div class="custom_container_2">
+      <div>
+    
+        <img src="{{ url_for('static', filename='images/teacher.png') }}" width="156" height="156" alt="Image" class="error-image">
+        <p>Преподаватель еще не выбран</p>
+        <a href="/teachers/create" class="home-link">Выберите преподавателя</a>
+      </div>
     </div>
 
     {% else %}
-    <h1 class="text-light">Преподаватель: {{ teacher }}</h1>
+    <div class="custom_container_3">
+      <div>
+    
+        <img src="{{ url_for('static', filename='images/teacher.png') }}" width="156" height="156" alt="Image" class="error-image">
+        <p>{{ teacher }}</p>
+      </div>
+    </div>
 
-     <div class="row pt-3">
-        <div class="col-3 button_alignment">
-          <a href="/teachers/timetable/this_week" class="other_button">
-            Текущая неделя
-          </a>
+     <div class="row ">
+      <div class="col-3 button_alignment">
+        <a href="/teachers/timetable/this_week" class="other_button">
+          Текущая неделя
+        </a>
 
-        </div>
+      </div>
 
         <div class="col-3 button_alignment">
           <a href="/teachers/timetable/today" class="other_button">
@@ -47,6 +48,7 @@
           </a>
 
         </div>
+
      </div>
 
     {% endif %}
