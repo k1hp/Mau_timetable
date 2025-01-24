@@ -13,19 +13,14 @@
     background-color: rgb(31, 28, 28);
 }
 
-.menu_button:active {
-    color: #f5f5f5;
-    background: linear-gradient(to bottom, #4ab2e2, #119953);
-}
-
 .menu_button.active {
-    background-color: #4A90E2;
+    background-color: #3e85d5;
     color: #f5f5f5;
-    transition: background 0.3s;
+    transition: background-color 0.4s;
 }
 
 .menu_button.active:hover {
-    background: linear-gradient(to bottom, #4ab2e2, #119953);
+    background-color: #428de281;
 }
 
 .other_button {

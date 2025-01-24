@@ -47,14 +47,20 @@ def profile():
 def authorisation():
     if "user" in session:
         return redirect(url_for("profile"))
+    if request.method == "GET":
+        username = None
+
     if request.method == "POST":
         if request.form["passwd"] == "1234":
             session["user"] = request.form["user"]
             return redirect(url_for("profile"))
         else:
-            flash(message="Введен неверный пароль, попробуй еще раз", category="error")
+            flash(message="Введен неверный пароль", category="is-invalid")
+            username = request.form["user"]
 
-    return render_template("authorisation.html", title="Authorisation_page")
+    return render_template(
+        "authorisation.html", title="Authorisation_page", username=username
+    )
 
 
 @app.route("/authorisation/sign_up")  # ну и тут нужно прикрутить redirect

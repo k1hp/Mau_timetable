@@ -1,16 +1,23 @@
-перенаправим потом уже с данной группой на основную с расписанием
 {% extends "navigation.html" %}
 
 {% block main %}
     {{ super() }}
     <div class="container">
         <form action="/old" method="POST">
-        <select name="{{ group }}">
-            {% for group, value in groups.items() %}
-            <option value="{{ group }}, {{ value }}"> {{ group }} </option>
-            {% endfor %}
-        </select>
-        <input type="submit" value="Выбрать группу">
+        <div class="row alginment">
+            <div class="col-3">
+                <select name="{{ group }}" class="form-select">
+                    {% for group, value in groups.items() %}
+                    <option value="{{ group }}, {{ value }}"> {{ group }} </option>
+                    {% endfor %}
+                </select>
+
+            </div>
+            <div class="col-auto alignment">
+                <input type="submit" value="Выбрать группу">
+
+            </div>
+        </div>
     </form>
     </div>
 {% endblock main %}
