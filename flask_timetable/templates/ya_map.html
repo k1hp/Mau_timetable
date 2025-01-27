@@ -1,0 +1,39 @@
+{% extends "navigation.html" %}
+{% block any_styles %}
+{{ super() }}
+ <script src="https://api-maps.yandex.ru/2.1/?apikey=3b7d5250-c6c6-4a50-a075-1ecc40f955ec&lang=ru_RU&theme=dark" type="text/javascript"></script>
+<style>
+    .ymaps-layers-pane {
+	filter: invert(100%);
+	-ms-filter: invert(100%);
+	-webkit-filter: invert(100%);
+	-moz-filter: invert(100%);
+	-o-filter: invert(100%);
+}
+</style>
+
+<script>
+        // Функция инициализации карты
+        function init() {
+            // Создаем карту
+            var myMap = new ymaps.Map("map", {
+                center: [68.954648, 33.062135], // Координаты центра карты (Москва)
+                zoom: 15.5, // Уровень масштабирования
+                controls: [] // Убираем все контролы
+            });
+            }
+        // Ждем загрузки API и инициализируем карту
+        ymaps.ready(init);
+    </script>
+{% endblock any_styles %}
+
+
+{% block main %}
+<div class="container">
+    <div class="custom_container_2 ">
+        <div id="map" style="width: 600px; height: 400px" class="ymaps-layers-pane"></div>
+
+    </div>
+
+</div>
+{% endblock main %}

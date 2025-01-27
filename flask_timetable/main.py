@@ -28,9 +28,10 @@ def not_found(error):
     return (render_template("not_found.html", title="Not Found"), 404)
 
 
+@app.route("/map")
 @app.route("/")
-def navigation():
-    return render_template("navigation.html", title="Navigation_page")
+def get_map():
+    return render_template("ya_map.html", title="Navigation_page")
 
 
 @app.route("/profile")
