@@ -36,7 +36,7 @@ class Parser:
         return self.session.get(
             url,
             headers=self.config.get_headers(),
-            proxies=self.config.get_proxy(),
+            # proxies=self.config.get_proxy(),
             params=params,
         )
 

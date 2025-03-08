@@ -41,7 +41,7 @@ class Parser:
     def create_session(self):
         session = requests.Session()
         session.headers.update(self.config.get_headers())
-        session.proxies.update(self.config.get_proxy())  # скорость зависит от прокси
+        # session.proxies.update(self.config.get_proxy())  # скорость зависит от прокси
         return session
 
     def kill_old_session(self):
