@@ -1,0 +1,12 @@
+{% extends "navigation.html" %}
+
+{% block main %}
+
+<div class="container">
+    <form action="/teachers/create" method="POST">
+        <input type="text" name="{{sstring}}" value="{{text}}">
+        <input type="submit" value="Показать">
+    </form>
+</div>
+
+{% endblock main %}

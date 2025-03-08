@@ -1,0 +1,14 @@
+
+.custom_message {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.custom_message.success {
+    background-color: #3A7734;
+}
+
+.custom_message.error {
+    background-color: #9C1A1C;
+}

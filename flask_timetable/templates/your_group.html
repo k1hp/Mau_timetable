@@ -3,39 +3,49 @@
 {% block main %}
  <div class="container">
 {% if group_name is none %}
-    <h1 class="text-light">Вы еще не выбрали группу</h1>
-     <div class="col-4 button_alignment">
-      <a href="/new/create" class="menu_button">
-        Выберите группу
-      </a>
+<div class="custom_container_2">
+  <div>
 
-    </div>
+    <img src="{{ url_for('static', filename='images/group.png') }}" width="156" height="156" alt="404 Image" class="error-image">
+    <p>Вы еще не выбрали группу</p>
+    <a href="/new/create" class="home-link">Выберите группу</a>
+  </div>
+</div>
+
+
+
 
 {% else %}
-    <h1 class="text-light"> Ваша группа: {{ group_name }} </h1>
-     <div class="row pt-3">
+    <div class="custom_container_3">
+      <div>
+        <img src="{{ url_for('static', filename='images/group.png') }}" width="156" height="156" alt="Image" class="error-image">
+        <h2 class="pt-2">{{ group_name }}</h2>
+      </div>
+    </div>
+
+     <div class="row">
         <div class="col-3 button_alignment">
-          <a href="/timetable/this_week" class="menu_button">
+          <a href="/group/timetable/this_week" class="other_button">
             Текущая неделя
           </a>
 
         </div>
 
         <div class="col-3 button_alignment">
-          <a href="/timetable/today" class="menu_button">
+          <a href="/group/timetable/today" class="other_button">
             Сегодня
           </a>
 
         </div>
          <div class="col-3 button_alignment">
-          <a href="/timetable/tomorrow" class="menu_button">
+          <a href="/group/timetable/tomorrow" class="other_button">
             Завтра
           </a>
 
         </div>
 
          <div class="col-3 button_alignment">
-          <a href="/timetable/next_week" class="menu_button">
+          <a href="/group/timetable/next_week" class="other_button">
             Следующая неделя
           </a>
 

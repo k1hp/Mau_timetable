@@ -1,0 +1,34 @@
+@import url('btns.css');
+
+/* .header-container {
+    height: 90px;
+    overflow: hidden;
+    max-height: 90px;
+} */
+.backgr {
+    background-color: #1A1F2B;
+}
+
+.icon-logo {
+    width: 40px; /* Ширина контейнера */
+    height: 40px; /* Высота контейнера */
+    content: url('https://img.icons8.com/pastel-glyph/64/laptop-metrics.png');
+    transition: transform 0.5s;
+}
+
+.icon-logo:hover{
+    transform: scale(1.05); /* Плавный переход */
+    content: url('https://img.icons8.com/?size=100&id=KSOtMbt2xoRc&format=png&color=000000'); /* Изменение иконки при наведении */
+}
+
+.icon-home {
+    width: 40px; /* Ширина контейнера */
+    height: 40px; /* Высота контейнера */
+    content: url("https://img.icons8.com/?size=100&id=z6m63h25vYs2&format=png&color=000000");
+    transition: transform 0.5s;
+}
+
+.account_button:hover .icon-home {
+    transform: scale(1.1);
+    content: url("https://img.icons8.com/?size=100&id=uNaaq8c2jqFp&format=png&color=000000");
+}

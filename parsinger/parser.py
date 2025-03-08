@@ -6,14 +6,7 @@ import functools
 from parsinger.preparations import Preparations
 from parsinger.managers import Manager
 from parsinger.times import Clocks
-from flask_timetable.settings import (
-    FILE,
-    BASE_URL,
-    GROUP_SETTINGS,
-    GROUP_PARAMS,
-    GROUP_CONFIG_PARAMS,
-    BASE_TIMETABLE_URL,
-)
+from flask_timetable.settings import *
 
 
 class Parser:
@@ -76,6 +69,7 @@ class MauParser(Parser):
     def __init__(self, config):
         super().__init__(config)
         self.start_page = super().get_selection_page(BASE_URL)
+        self.manager = Manager()
 
     def create_parameter(self, parameter) -> str:
         selects = self.start_page.find("select", attrs={"name": parameter})
@@ -86,6 +80,11 @@ class MauParser(Parser):
             if inp.lower() == value.text.lower():
                 return value.attrs["value"]
 
+    def get_parameter_values(self, parameter: str) -> dict:
+        selects = self.start_page.find("select", attrs={"name": parameter})
+        values = selects.find_all("option")
+        return {value.text: value.attrs["value"] for value in values[1:]}
+
     def define_data(self): ...
 
 
@@ -95,7 +94,6 @@ class GroupsParser(MauParser):
         self.parameter_names = GROUP_PARAMS
         self.config_names = GROUP_CONFIG_PARAMS
         self.parameters = {"mode": "1"}
-        self.manager = Manager()
 
     def get_params(self, names: list | None = None, filename=FILE) -> dict:
         data = self.manager.get_from(filename)
@@ -107,16 +105,12 @@ class GroupsParser(MauParser):
             result[name] = data.get(name)
         return result
 
-    def get_parameter_values(self, parameter: str) -> dict:
-        selects = self.start_page.find("select", attrs={"name": parameter})
-        values = selects.find_all("option")
-        return {value.text: value.attrs["value"] for value in values[1:]}
-
     def get_groups(self):
         params = self.parameters
         params.update(
             self.manager.get_from(
-                r"C:\Users\USER\PycharmProjects\Mau_timetable\flask_timetable\group_selection.json"
+                # r"C:\Users\USER\PycharmProjects\Mau_timetable\flask_timetable\group_selection.json"
+                FILE
             )
         )
         print(params)
@@ -176,8 +170,22 @@ class TeacherParser(MauParser):
     def __init__(self, config):
         super().__init__(config)
         self.start_page = super().get_selection_page(BASE_URL)
-        self.parameter_names = ["pers2", "sstring"]
+        self.parameter_names = TEACHER_PARAMS
         self.parameters = {"mode2": "1", "tab": "2"}
+
+    def get_teachers(self) -> dict:
+        params = self.parameters
+        params.update(
+            self.manager.get_from(
+                # r"C:\Users\USER\PycharmProjects\Mau_timetable\flask_timetable\group_selection.json"
+                FILE_T
+            )
+        )
+        print(params)
+        soup = self.get_selection_page(BASE_URL, params)
+        teachers = soup.select("table.table a")
+        teachers = {teacher.text: teacher.attrs["href"] for teacher in teachers}
+        return teachers
 
     def get_params(self, names=None) -> dict:
         if names is None:
@@ -189,6 +197,14 @@ class TeacherParser(MauParser):
         params[names[1]] = inp  # sstring
 
         return params
+
+    def create_config(self, teacher_url: str):
+        params = teacher_url.split("?")[1].split("&")
+        print(params)
+        for element in params:
+            if "key" in element:
+                value = element.split("=")[1]
+                self.manager.save_to({"key": value}, TEACHER_SETTINGS)
 
     def select_teacher(self):
         params = self.get_params()
@@ -203,8 +219,16 @@ class TeacherParser(MauParser):
 
         return BASE_URL + teachers.get(teacher_name, "")
 
-    def get_timetable(self):
-        return super().get_html(self.select_teacher())
+    def fast_select_teacher(self, date: str):
+        pers = self.get_parameter_values(TEACHER_PARAMS[0]).keys()
+        data = self.clocks.get_period_params(pers, date)
+        settings = self.manager.get_from(TEACHER_SETTINGS)
+        settings.update(data)
+        self.manager.save_to(settings, TEACHER_SETTINGS)
+        return (BASE_TIMETABLE_URL_T, settings)
+
+    def get_timetable(self, date: str):
+        return super().get_html(*self.fast_select_teacher(date))
 
 
 class AuditoriumParser(MauParser): ...

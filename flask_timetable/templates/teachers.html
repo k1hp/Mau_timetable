@@ -1,0 +1,56 @@
+{% extends "navigation.html" %}
+
+{% block main %}
+<div class="container">
+    {% if teacher is none %}
+    <div class="custom_container_2">
+      <div>
+    
+        <img src="{{ url_for('static', filename='images/teacher.png') }}" width="156" height="156" alt="Image" class="error-image">
+        <p>Преподаватель еще не выбран</p>
+        <a href="/teachers/create" class="home-link">Выберите преподавателя</a>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="custom_container_3">
+      <div>
+    
+        <img src="{{ url_for('static', filename='images/teacher.png') }}" width="156" height="156" alt="Image" class="error-image">
+        <p>{{ teacher }}</p>
+      </div>
+    </div>
+
+     <div class="row ">
+      <div class="col-3 button_alignment">
+        <a href="/teachers/timetable/this_week" class="other_button">
+          Текущая неделя
+        </a>
+
+      </div>
+
+        <div class="col-3 button_alignment">
+          <a href="/teachers/timetable/today" class="other_button">
+            Сегодня
+          </a>
+
+        </div>
+         <div class="col-3 button_alignment">
+          <a href="/teachers/timetable/tomorrow" class="other_button">
+            Завтра
+          </a>
+
+        </div>
+
+         <div class="col-3 button_alignment">
+          <a href="/teachers/timetable/next_week" class="other_button">
+            Следующая неделя
+          </a>
+
+        </div>
+
+     </div>
+
+    {% endif %}
+</div>
+{% endblock main %}

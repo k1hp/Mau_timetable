@@ -1,0 +1,60 @@
+.form-body {
+    background-color: #28334ee2;;
+    color: #bebebefa;
+    border-radius: 6px;
+    padding: 15px 35px 15px 35px;
+}
+
+.custom-container {
+    width: 80%; /* Установите желаемую ширину */
+    max-width: 1200px; /* Установите максимальную ширину */
+    margin: 0 auto; /* Центрирование */
+}
+
+.form-logo {
+    width: 40px; /* Ширина контейнера */
+    height: 40px; /* Высота контейнера */
+    content: url('images/sword.gif');
+    transition: transform 0.6s;
+}
+
+.form-logo:hover{
+    transform: scale(1.15); /* Плавный переход */
+}
+
+.form-button {
+
+}
+
+
+
+.custom-rounded {
+    border-top-left-radius: 6px;  /* Скругление верхнего левого угла */
+    border-bottom-left-radius: 6px; /* Скругление нижнего левого угла */
+    border-top-right-radius: 0;     /* Без скругления верхнего правого угла */
+    border-bottom-right-radius: 0;   /* Без скругления нижнего правого угла */
+}
+
+.transparent-input {
+    border: 1px solid #1A1F2B;
+    background-color: transparent; /* Прозрачный фон */
+}
+
+.transparent-input:focus {
+    border: 1px solid #1A1F2B;
+    background-color: transparent; /* Прозрачный фон */
+}
+
+.transparent-input::placeholder {
+    color: rgba(255, 255, 255, 0.7); /* Цвет плейсхолдера (можно изменить по желанию) */
+}
+
+.clip-path-image {
+    overflow: hidden; /* Скрыть часть изображения, выходящую за пределы */
+}
+
+.clip-path-image img {
+    width: 90%; /* Заставляет изображение занимать всю ширину контейнера */
+    height: auto; /* Заставляет изображение занимать всю высоту контейнера */
+    object-fit: cover; /* Масштабирует изображение, сохраняя его пропорции и обрезая лишнее */
+}
