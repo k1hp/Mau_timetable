@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta, date
 from typing import Optional, List
 
 from flask_timetable.settings import GROUP_CONFIG_PARAMS
@@ -10,6 +9,7 @@ from typing import List
 class Period:
     def __init__(self, gap_string: str):
         self.__format: str = "%d.%m.%Y"
+        self.__new_format: str = "%Y-%m-%d"
         self.__gap_string: str = gap_string
 
         self.__period_list: List[date] = []
@@ -17,8 +17,16 @@ class Period:
         self.__period_list = self.convert_to_list()
 
     @property
-    def parameters(self) -> tuple:
-        return self.__start, self.__end, self.__kind
+    def start_string(self) -> str:
+        return self.__start.strftime(self.__new_format)
+
+    @property
+    def end_string(self) -> str:
+        return self.__end.strftime(self.__new_format)
+
+    @property
+    def kind(self) -> str:
+        return self.__kind
 
     def check_key(self, key: int) -> int:
         if not isinstance(key, int):
@@ -78,42 +86,27 @@ class Clocks:
         }
 
     def get_day_month(self, inp: datetime | date) -> tuple:
-        return int(inp.strftime("%d")), int(inp.strftime("%m"))
-
-    def remake_period(self, inp: str) -> list[datetime]:
-        period = inp.split()[0].split("-")
-        start = datetime.strptime(period[0], self.format)
-        end = datetime.strptime(period[1], self.format)
-        lst = []
-        while True:
-            lst.append(start.date())
-            if end < start + timedelta(days=1):
-                break
-            start += timedelta(days=1)
-
-        return lst
+        return inp.day, inp.month
 
     def define_need_period(
-        self, periods: list[str], our_date: datetime | date
-    ) -> Optional[str]:
-        for period in periods:
-            if our_date in self.remake_period(period):
+        self, periods: List[str], our_date: datetime | date
+    ) -> Optional[Period]:
+        for element in periods:
+            period = Period(element)
+            if our_date in period:
                 return period
 
-    def get_period_params(self, periods: list[str], our_date: str) -> dict:
+    def get_period_params(self, periods: List[str], our_date: str) -> dict:
         our_date = self.period_values[our_date]
-        inp = self.define_need_period(periods, our_date)
-        start, end, kind = GROUP_CONFIG_PARAMS[1:]
-        data = {}
-        # вид даты 2025-01-06
-        period, week = inp.split()
-        period_start, period_end = period.split("-")
-        period_start = datetime.strptime(period_start, self.format)
-        period_end = datetime.strptime(period_end, self.format)
-        data[start] = period_start.strftime(self.new_format)
-        data[end] = period_end.strftime(self.new_format)
-        data[kind] = week.split("/")[0].strip("(")
-        print(data)
+        period: Optional[Period] = self.define_need_period(periods, our_date)
+        if period is None:
+            raise ValueError("Такого периода не существует")
+        data = dict(
+            zip(
+                GROUP_CONFIG_PARAMS[1:],
+                (period.start_string, period.end_string, period.kind),
+            )
+        )
         return data
 
 
@@ -144,13 +137,20 @@ if __name__ == "__main__":
         "27.01.2025-02.02.2025 (ч/н)",
         "03.02.2025-09.02.2025 (н/н)",
         "10.02.2025-16.02.2025 (ч/н)",
+        "04.03.2025-10.03.2025 (ч/н)",
     ]
 
     clocks = Clocks()
     cls = Period(period)
     print(cls)
     print(f"Да, нет: {datetime(day=8, month=9, year=2024) in cls}")
-    print(cls.parameters)
+    # print(cls.parameters)
 
-    print(clocks.remake_period(period))
-    print(clocks.define_need_period(periods, datetime(day=27, month=1, year=2025)))
+    # print(clocks.remake_period(period))
+    slc = clocks.define_need_period(
+        periods, datetime(day=27, month=1, year=2025)
+    ).__str__
+    try:
+        print(clocks.get_period_params(periods, "tomorrow"))
+    except Exception as e:
+        print(e)

@@ -103,7 +103,9 @@ def create_new_group():
     if request.method == "POST":
         params = dict(request.form)
         periods = group_parser.get_parameter_values(pers)
-        value = periods[clocks.define_need_period(periods.keys(), clocks.today)]
+        value = periods[
+            clocks.define_need_period(periods.keys(), clocks.today).__str__()
+        ]
         params.update({pers: value})
 
         manager.save_to(params, FILE)
@@ -202,7 +204,9 @@ def create_teachers():
     if request.method == "POST":
         params = dict(request.form)
         periods = teacher_parser.get_parameter_values(pers)
-        value = periods[clocks.define_need_period(periods.keys(), clocks.today)]
+        value = periods[
+            clocks.define_need_period(periods.keys(), clocks.today).__str__()
+        ]
         params.update({pers: value})
 
         manager.save_to(params, FILE_T)
