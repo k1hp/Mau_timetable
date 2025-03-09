@@ -1,40 +1,28 @@
+from __future__ import annotations
 import requests
 from bs4 import BeautifulSoup
-import json
-import functools
+from typing import TYPE_CHECKING
+from abc import ABC, abstractmethod
 
-from parsinger.preparations import Preparations
 from parsinger.managers import Manager
 from parsinger.times import Clocks
 from flask_timetable.settings import *
+from handlers.decorators import session_error_handling
+
+if TYPE_CHECKING:
+    from preparations import Preparations
 
 
-class Parser:
-    def __init__(self, config):
-        self.config = config
+class Parser(ABC):
+    def __init__(self, configuration: Preparations):
+        self.config = configuration
         self.session = self.create_session()
         self.clocks = Clocks()
-
-    @staticmethod
-    def session_error_handling(function):
-        @functools.wraps(function)
-        def wrapper(self_obj, *args, **kwargs):
-            try:
-                print("Декторатор применился")
-                return function(self_obj, *args, **kwargs)
-
-            except requests.exceptions.RequestException as e:
-                print(f"Ошибка при выполнении запроса: {e}")
-                self_obj.kill_old_session()
-                self_obj.session = self_obj.create_session()
-                return function(self_obj, *args, **kwargs)
-
-        return wrapper
 
     def create_session(self):
         session = requests.Session()
         session.headers.update(self.config.get_headers())
-        # session.proxies.update(self.config.get_proxy())  # скорость зависит от прокси
+        # session.proxies.update(self.config.get_proxies())  # скорость зависит от прокси
         return session
 
     def kill_old_session(self):
@@ -62,12 +50,13 @@ class Parser:
         soup = self.create_soup(html)
         return soup
 
+    @abstractmethod
     def get_timetable(self): ...
 
 
-class MauParser(Parser):
-    def __init__(self, config):
-        super().__init__(config)
+class MauParser(Parser, ABC):
+    def __init__(self, configuration: Preparations):
+        super().__init__(configuration)
         self.start_page = super().get_selection_page(BASE_URL)
         self.manager = Manager()
 
@@ -85,12 +74,13 @@ class MauParser(Parser):
         values = selects.find_all("option")
         return {value.text: value.attrs["value"] for value in values[1:]}
 
+    @abstractmethod
     def define_data(self): ...
 
 
 class GroupsParser(MauParser):
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, configuration: Preparations):
+        super().__init__(configuration)
         self.parameter_names = GROUP_PARAMS
         self.config_names = GROUP_CONFIG_PARAMS
         self.parameters = {"mode": "1"}
@@ -107,42 +97,13 @@ class GroupsParser(MauParser):
 
     def get_groups(self):
         params = self.parameters
-        params.update(
-            self.manager.get_from(
-                # r"C:\Users\USER\PycharmProjects\Mau_timetable\flask_timetable\group_selection.json"
-                FILE
-            )
-        )
+        params.update(self.manager.get_from(FILE))
         print(params)
         soup = self.get_selection_page(BASE_URL, params)
         groups = soup.select("div.table-responsive a.btn")
         groups = {group.text: group.attrs["href"] for group in groups}
         print(groups)
         return groups
-
-    def default_select_group(self):
-        # group_name = None
-        # if old_group:
-        #     input_data = self.manager.get_from()
-        #     self.parameters = input_data["params"]
-        #     params = self.get_params(names=["pers"])
-        #     group_name = input_data["group_name"]
-        # else:
-        params = self.get_params()
-
-        soup = self.get_selection_page(BASE_URL, params)
-        groups = soup.select("div.table-responsive a.btn")
-        groups = {group.text: group.attrs["href"] for group in groups}
-        group_name = params["group"]
-
-        if group_name not in groups:
-            raise ValueError("Ошибка в названии группы")
-
-        group_url = groups.get(group_name, "")
-        if group_url != "":
-            self.create_config(group_url)  # обновляем информацию по группе в конфиге
-
-        return BASE_URL + group_url
 
     def fast_select_group(self, date: str):
         pers = self.get_parameter_values(GROUP_PARAMS[0]).keys()
@@ -165,22 +126,19 @@ class GroupsParser(MauParser):
         # return self.get_html(self.default_select_group())
         return self.get_html(*self.fast_select_group(date))
 
+    def define_data(self): ...
+
 
 class TeacherParser(MauParser):
-    def __init__(self, config):
-        super().__init__(config)
+    def __init__(self, configuration: Preparations):
+        super().__init__(configuration)
         self.start_page = super().get_selection_page(BASE_URL)
         self.parameter_names = TEACHER_PARAMS
         self.parameters = {"mode2": "1", "tab": "2"}
 
     def get_teachers(self) -> dict:
         params = self.parameters
-        params.update(
-            self.manager.get_from(
-                # r"C:\Users\USER\PycharmProjects\Mau_timetable\flask_timetable\group_selection.json"
-                FILE_T
-            )
-        )
+        params.update(self.manager.get_from(FILE_T))
         print(params)
         soup = self.get_selection_page(BASE_URL, params)
         teachers = soup.select("table.table a")
@@ -230,28 +188,10 @@ class TeacherParser(MauParser):
     def get_timetable(self, date: str):
         return super().get_html(*self.fast_select_teacher(date))
 
+    def define_data(self): ...
 
-class AuditoriumParser(MauParser): ...
 
-
-if __name__ == "__main__":
-    config = Preparations()
-    timetable = GroupsParser(config)
-    # with open("file.html", "w") as f:
-    #     f.write(timetable.get_timetable())
-    # timetable = TeacherParser(config)
-    # soup = BeautifulSoup(timetable.get_timetable(...), "lxml")
-    table = soup.find("div", class_="row table-row")
-    table = table.prettify()
-    head = soup.select_one("div[class='col-md-12 content bvi-speech'] h1")
-    head = head.prettify()
-    with open("file.html", "w", encoding="utf-8") as f:
-        try:
-            f.write(head)
-            f.write(table)
-            print("All is well!")
-        except Exception as e:
-            print(f"Произошла ошибка: {e}")
+# class AuditoriumParser(MauParser): ...
 
 
 "https://mauniver.ru/student/timetable/new/?mode=1&pers=315&facs=8&courses=1"
