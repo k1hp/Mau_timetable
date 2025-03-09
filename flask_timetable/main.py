@@ -29,9 +29,13 @@ def not_found(error):
 
 
 @app.route("/map")
-@app.route("/")
 def get_map():
-    return render_template("ya_map.html", title="Navigation_page")
+    return render_template("ya_map.html", title="Ya_map")
+
+
+@app.route("/")
+def get_navigation_page():
+    return render_template("navigation.html", title="Navigation_page")
 
 
 @app.route("/profile")
@@ -73,7 +77,7 @@ def sign_up():
 @app.route("/authorisation/logout")
 def logout():
     session.pop("user", None)
-    return redirect(url_for("navigation"))
+    return redirect(url_for("get_navigation_page"))
 
 
 @app.route("/new/check")
