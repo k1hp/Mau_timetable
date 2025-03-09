@@ -1,6 +1,68 @@
 from datetime import datetime, timedelta, date
+from typing import Optional, List
 
 from flask_timetable.settings import GROUP_CONFIG_PARAMS
+
+from datetime import datetime, timedelta, date
+from typing import List
+
+
+class Period:
+    def __init__(self, gap_string: str):
+        self.__format: str = "%d.%m.%Y"
+        self.__gap_string: str = gap_string
+
+        self.__period_list: List[date] = []
+        self.__start, self.__end, self.__kind = self.parse_string()
+        self.__period_list = self.convert_to_list()
+
+    @property
+    def parameters(self) -> tuple:
+        return self.__start, self.__end, self.__kind
+
+    def check_key(self, key: int) -> int:
+        if not isinstance(key, int):
+            raise TypeError("Индекс должен быть целым числом")
+        if key < -1 or key >= len(self.__period_list):
+            raise IndexError("Неверный индекс")
+        return key
+
+    def __str__(self):
+        return self.__gap_string
+
+    def __len__(self) -> int:
+        return len(self.__period_list)
+
+    def __getitem__(self, key: int) -> date:
+        key = self.check_key(key)
+        return self.__period_list[key]
+
+    def __contains__(self, item: date | datetime) -> bool:
+        if isinstance(item, datetime):
+            return item.date() in self.__period_list
+        return item in self.__period_list
+
+    def __iter__(self):
+        yield from self.__period_list
+
+    def parse_string(self) -> tuple:
+        parts = self.__gap_string.split()
+        if len(parts) != 2:
+            raise ValueError("Неверный формат строки. Ожидается 'дата-диапазон тип'.")
+
+        start, end = [
+            datetime.strptime(part, self.__format).date()
+            for part in parts[0].split("-")
+        ]
+        kind = parts[1].split("/")[0].strip("(")
+        return start, end, kind
+
+    def convert_to_list(self) -> List[date]:
+
+        return [
+            self.__start + timedelta(days=i)
+            for i in range((self.__end - self.__start).days + 1)
+        ]
 
 
 class Clocks:
@@ -31,7 +93,9 @@ class Clocks:
 
         return lst
 
-    def define_need_period(self, periods: list[str], our_date: datetime | date) -> str:
+    def define_need_period(
+        self, periods: list[str], our_date: datetime | date
+    ) -> Optional[str]:
         for period in periods:
             if our_date in self.remake_period(period):
                 return period
@@ -83,5 +147,10 @@ if __name__ == "__main__":
     ]
 
     clocks = Clocks()
+    cls = Period(period)
+    print(cls)
+    print(f"Да, нет: {datetime(day=8, month=9, year=2024) in cls}")
+    print(cls.parameters)
+
     print(clocks.remake_period(period))
-    print(clocks.define_need_period(periods))
+    print(clocks.define_need_period(periods, datetime(day=27, month=1, year=2025)))
